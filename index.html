@@ -52,9 +52,14 @@
       </p>
     </div>
 
-    <!-- Bloque visible si ya se registró en este navegador -->
-    <div id="yaRegistrado" class="hidden p-4 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-xl text-center text-sm font-semibold">
-      Ya has completado tu registro previamente para este evento.
+    <!-- Pantalla de confirmación permanente cuando ya se registró -->
+    <div id="pantallaExito" class="hidden text-center py-6 space-y-3">
+      <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
+        ✓
+      </div>
+      <h2 class="text-xl font-bold text-white uppercase">¡Registro Exitoso!</h2>
+      <p class="text-sm text-emerald-400 font-medium">Revisa tu correo</p>
+      <p class="text-xs text-slate-400">Ya has completado tu inscripción previamente para este taller.</p>
     </div>
 
     <!-- Formulario -->
@@ -112,13 +117,13 @@
   </div>
 
   <script>
-    // REEMPLAZA ESTA URL CON TU URL REAL DE GOOGLE APPS SCRIPT (que termina en /exec)
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AQUI_TU_ID_REAL/exec';
+    // PEGA AQUÍ TU URL DE APPS SCRIPT QUE TERMINA EN /exec
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV7Cb4LxH-uxWZxsfhcSmVcEs-1svaF5ZhjFAs18UnnjNdwU5Ocs6r7xFXrtlWrUPr/exec';
 
-    // Verificar si ya se registró en este dispositivo
-    if (localStorage.getItem('kfl_taller_registrado') === 'true') {
+    // Si ya completó el formulario en este dispositivo, oculta el formulario y muestra la pantalla final
+    if (localStorage.getItem('kfl_taller_completado') === 'true') {
       document.getElementById('registroForm').classList.add('hidden');
-      document.getElementById('yaRegistrado').classList.remove('hidden');
+      document.getElementById('pantallaExito').classList.remove('hidden');
     }
 
     document.getElementById('registroForm').addEventListener('submit', async (e) => {
@@ -149,28 +154,21 @@
         });
 
         const res = await response.json();
-        mensajeDiv.classList.remove('hidden');
 
         if (res.status === 'success') {
-          localStorage.setItem('kfl_taller_registrado', 'true');
+          // Guardar bloqueo local permanente
+          localStorage.setItem('kfl_taller_completado', 'true');
 
-          mensajeDiv.className = 'mt-4 p-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 rounded-lg text-center text-sm font-medium';
-          mensajeDiv.innerText = '¡Registro exitoso! Revisa tu correo';
-          
-          document.getElementById('registroForm').reset();
-          
-          setTimeout(() => {
-            document.getElementById('registroForm').classList.add('hidden');
-            document.getElementById('yaRegistrado').classList.remove('hidden');
-          }, 2500);
+          // Ocultar formulario y mostrar mensaje de éxito definitivo
+          document.getElementById('registroForm').classList.add('hidden');
+          document.getElementById('pantallaExito').classList.remove('hidden');
 
-        } else if (res.status === 'already_registered') {
-          mensajeDiv.className = 'mt-4 p-3 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-lg text-center text-sm font-medium';
-          mensajeDiv.innerText = res.message;
         } else if (res.status === 'limit_reached') {
+          mensajeDiv.classList.remove('hidden');
           mensajeDiv.className = 'mt-4 p-3 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-lg text-center text-sm font-medium';
           mensajeDiv.innerText = 'Lo sentimos, el cupo de 120 registros ha sido alcanzado.';
         } else {
+          mensajeDiv.classList.remove('hidden');
           mensajeDiv.className = 'mt-4 p-3 bg-rose-950/80 border border-rose-500/50 text-rose-300 rounded-lg text-center text-sm font-medium';
           mensajeDiv.innerText = 'Error: ' + res.message;
         }
