@@ -107,7 +107,7 @@
 
   <script>
     // Reemplaza esta URL con la que te da Google Apps Script al implementar como Web App
-    const SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV7Cb4LxH-uxWZxsfhcSmVcEs-1svaF5ZhjFAs18UnnjNdwU5Ocs6r7xFXrtlWrUPr/exec';
 
     document.getElementById('registroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
