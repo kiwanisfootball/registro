@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro KFL</title>
   
-  <!-- Favicon usando la imagen oficial local -->
   <link rel="icon" type="image/png" href="logo.png">
 
   <!-- Fuente Montserrat -->
@@ -13,7 +12,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -40,15 +38,23 @@
   <!-- Contenedor Principal -->
   <div class="w-full max-w-lg bg-slate-900/90 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 backdrop-blur-md z-10">
     
-    <!-- Header con Logo Oficial KFL -->
+    <!-- Header -->
     <div class="text-center mb-8">
       <img src="logo.png" alt="KFL Logo" class="w-32 h-32 mx-auto mb-4 object-contain drop-shadow-lg">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white uppercase">
-        Formulario de Registro
+        FORMULARIO DE REGISTRO
       </h1>
-      <p class="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
-        Kiwanis Football League • Cupos limitados (Máx. 120)
+      <p class="text-xs sm:text-sm text-slate-300 font-bold uppercase mt-2 tracking-wide">
+        TALLER: FORMACIÓN INTEGRAL DEL ATLETA ADOLESCENTE
       </p>
+      <p class="text-xs text-slate-400 font-medium uppercase mt-1">
+        CUPOS LIMITADOS: (MÁX. 120)
+      </p>
+    </div>
+
+    <!-- Mensaje cuando ya se registró antes -->
+    <div id="yaRegistrado" class="hidden p-4 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-xl text-center text-sm font-semibold">
+      Ya has completado tu registro previamente para este evento.
     </div>
 
     <!-- Formulario -->
@@ -106,8 +112,13 @@
   </div>
 
   <script>
-    // Reemplaza esta URL con la que te da Google Apps Script al implementar como Web App
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV7Cb4LxH-uxWZxsfhcSmVcEs-1svaF5ZhjFAs18UnnjNdwU5Ocs6r7xFXrtlWrUPr/exec';
+    const SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT';
+
+    // Verificar si la persona ya se registró en este navegador
+    if (localStorage.getItem('kfl_taller_registrado') === 'true') {
+      document.getElementById('registroForm').classList.add('hidden');
+      document.getElementById('yaRegistrado').classList.remove('hidden');
+    }
 
     document.getElementById('registroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -137,13 +148,25 @@
         });
 
         const res = await response.json();
-
         mensajeDiv.classList.remove('hidden');
 
         if (res.status === 'success') {
+          // Guardar marca en el navegador para bloquear re-envíos
+          localStorage.setItem('kfl_taller_registrado', 'true');
+
           mensajeDiv.className = 'mt-4 p-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 rounded-lg text-center text-sm font-medium';
-          mensajeDiv.innerText = '¡Registro exitoso! Revisa tu correo y WhatsApp.';
+          mensajeDiv.innerText = '¡Registro exitoso! Revisa tu correo';
+          
           document.getElementById('registroForm').reset();
+          
+          setTimeout(() => {
+            document.getElementById('registroForm').classList.add('hidden');
+            document.getElementById('yaRegistrado').classList.remove('hidden');
+          }, 2500);
+
+        } else if (res.status === 'already_registered') {
+          mensajeDiv.className = 'mt-4 p-3 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-lg text-center text-sm font-medium';
+          mensajeDiv.innerText = res.message;
         } else if (res.status === 'limit_reached') {
           mensajeDiv.className = 'mt-4 p-3 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-lg text-center text-sm font-medium';
           mensajeDiv.innerText = 'Lo sentimos, el cupo de 120 registros ha sido alcanzado.';
