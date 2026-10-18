@@ -52,7 +52,7 @@
       </p>
     </div>
 
-    <!-- Mensaje cuando ya se registró antes -->
+    <!-- Bloque visible si ya se registró en este navegador -->
     <div id="yaRegistrado" class="hidden p-4 bg-amber-950/80 border border-amber-500/50 text-amber-300 rounded-xl text-center text-sm font-semibold">
       Ya has completado tu registro previamente para este evento.
     </div>
@@ -112,9 +112,10 @@
   </div>
 
   <script>
-    const SCRIPT_URL = 'TU_URL_DE_GOOGLE_APPS_SCRIPT';
+    // REEMPLAZA ESTA URL CON TU URL REAL DE GOOGLE APPS SCRIPT (que termina en /exec)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AQUI_TU_ID_REAL/exec';
 
-    // Verificar si la persona ya se registró en este navegador
+    // Verificar si ya se registró en este dispositivo
     if (localStorage.getItem('kfl_taller_registrado') === 'true') {
       document.getElementById('registroForm').classList.add('hidden');
       document.getElementById('yaRegistrado').classList.remove('hidden');
@@ -151,7 +152,6 @@
         mensajeDiv.classList.remove('hidden');
 
         if (res.status === 'success') {
-          // Guardar marca en el navegador para bloquear re-envíos
           localStorage.setItem('kfl_taller_registrado', 'true');
 
           mensajeDiv.className = 'mt-4 p-3 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 rounded-lg text-center text-sm font-medium';
